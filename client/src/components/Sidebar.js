@@ -645,50 +645,49 @@
 
 "use client"
 
-import { useEffect, useState } from "react"
-import axios from "axios"
+import React, { useEffect } from "react";
+import axios from "axios";
+import { useUser } from './UserContext';  // Ensure this path is correct and the context provides user and setUser
 
 const Sidebar = ({ onManageProfileClick }) => {
-  const [user, setUser] = useState({ username: "", memberSince: "", email: "", coins: 0 })
-  const [loading, setLoading] = useState(true)
-  const [activeLink, setActiveLink] = useState("profile")
+  const [loading, setLoading] = React.useState(true);
+  const [activeLink, setActiveLink] = React.useState("profile");
+  const { user, setUser } = useUser(); // Only useUser here to access user and setUser
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const token = localStorage.getItem("token")
-
+        const token = localStorage.getItem("token");
         if (!token) {
-          setLoading(false)
-          return
+          console.log("No token found");
+          setLoading(false);
+          return;
         }
-
+  
         const response = await axios.get("http://localhost:8080/api/profile", {
           headers: { Authorization: `Bearer ${token}` },
-        })
-
+        });
+  
+        console.log("User data fetched:", response.data); // Log fetched data
+  
         setUser({
-          username: response.data.username || "User",
-          email: response.data.email || "user@example.com",
-          memberSince: response.data.created_at
-            ? new Date(response.data.created_at).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })
-            : "Unknown",
-          coins: 0, // Not showing real-time coins as requested
-        })
-        setLoading(false)
+          username: response.data.username || "Default User",
+          memberSince: response.data.created_at 
+                        ? new Date(response.data.created_at).toLocaleDateString() 
+                        : "Unknown",
+        });
+        console.log("User context set with:", user); // Log user context after setting
+  
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching user profile:", error)
-        setLoading(false)
+        console.error("Error fetching user profile:", error);
+        setLoading(false);
       }
-    }
-
-    fetchUserProfile()
-  }, [])
-
+    };
+  
+    fetchUserProfile();
+  }, [setUser]); // Depend on setUser
+  
   // Animation keyframes
   const keyframes = `
       @keyframes fadeIn {
@@ -707,6 +706,7 @@ const Sidebar = ({ onManageProfileClick }) => {
           100% { transform: scale(1); }
       }
   `
+
 
   if (loading) {
     return (
@@ -815,6 +815,53 @@ const Sidebar = ({ onManageProfileClick }) => {
         Welcome Back!
       </h2>
 
+      {/* Navigation Links */}
+      <div
+        style={{
+          width: "100%",
+          marginTop: "30px",
+          animation: "fadeIn 0.8s ease-out",
+        }}
+      >
+        <a
+          href="#"
+          style={{
+            ...navLinkStyle,
+            backgroundColor: activeLink === "profile" ? "rgba(255, 255, 255, 0.15)" : "transparent",
+          }}
+          onClick={(e) => {
+            e.preventDefault()
+            setActiveLink("profile")
+          }}
+        >
+          {/* <svg
+            width="1"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ margin: "0 0 0.5rem 0"}} 
+            // style={{ marginRight: "10px" }} 
+            
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg> */}
+          {/* Dynamic Welcome Message */}
+          <div>
+            <h2>{user.username}</h2>
+            
+            <div>
+              <p><strong>📛 </strong> {user.username}</p>
+              <p><strong>📅 </strong> {user.memberSince}</p>
+            </div>
+          </div>
+
+        </a>
+
       {/* Manage Profile Button */}
       <button
         style={buttonStyle}
@@ -846,42 +893,6 @@ const Sidebar = ({ onManageProfileClick }) => {
         </svg>
         Manage Your Profile
       </button>
-
-      {/* Navigation Links */}
-      <div
-        style={{
-          width: "100%",
-          marginTop: "30px",
-          animation: "fadeIn 0.8s ease-out",
-        }}
-      >
-        <a
-          href="#"
-          style={{
-            ...navLinkStyle,
-            backgroundColor: activeLink === "profile" ? "rgba(255, 255, 255, 0.15)" : "transparent",
-          }}
-          onClick={(e) => {
-            e.preventDefault()
-            setActiveLink("profile")
-          }}
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ marginRight: "10px" }}
-          >
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-          Profile
-        </a>
 
         <a
           href="/dashboard"

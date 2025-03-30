@@ -122,6 +122,83 @@ function Profile() {
     fetchUserDataAndProducts()
   }, [navigate])
 
+//   useEffect(() => {
+//   const fetchUserDataAndProducts = async () => {
+//     try {
+//       const token = localStorage.getItem("token");
+//       if (!token) {
+//         console.log("No token found, redirecting...");
+//         navigate("/login");
+//         return;
+//       }
+
+//       const headers = { Authorization: `Bearer ${token}` };
+//       const profileResponse = await axios.get("http://localhost:8080/api/profile", { headers });
+//       const productsResponse = await axios.get("http://localhost:8080/api/products", { headers });
+
+//       const userId = profileResponse.data.userId;
+//       const userProducts = productsResponse.data.filter(product => product.userId === userId);
+
+//       setProducts(userProducts);
+//       console.log("Products set:", userProducts);
+//     } catch (error) {
+//       console.error("Failed to fetch data:", error);
+//     }
+//   };
+
+//   fetchUserDataAndProducts();
+// }, [navigate]);
+
+  useEffect(() => {
+    const fetchUserProducts = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("No token found, redirecting...");
+        navigate("/login");
+        return;
+      }
+
+      try {
+        const headers = { Authorization: `Bearer ${token}` };
+        const response = await axios.get("http://localhost:8080/api/products", { headers });
+        setProducts(response.data);
+        console.log("User-specific products:", response.data);
+      } catch (error) {
+        console.error("Failed to fetch user-specific products:", error);
+      }
+    };
+
+    fetchUserProducts();
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchUserProducts = async () => {
+      const token = localStorage.getItem("token");
+        if (!token) {
+            console.log("No token found, redirecting...");
+            navigate("/login");
+            return;
+        }
+
+         try {
+            const headers = { Authorization: `Bearer ${token}` };
+            const response = await axios.get("http://localhost:8080/api/products", { headers });
+            setProducts(response.data);
+            console.log("User-specific products:", response.data);
+            
+           // Update total products
+            setUserStats(prevStats => ({
+                ...prevStats,
+                totalProducts: response.data.length
+            }));
+        } catch (error) {
+            console.error("Failed to fetch user-specific products:", error);
+        }
+    };
+
+      fetchUserProducts();
+  }, [navigate]);
+
   const getTimeSinceListed = (createdAt) => {
     const createdDate = new Date(createdAt)
     const now = new Date()
@@ -720,6 +797,40 @@ function Profile() {
                 >
                   Pending Trade Requests
                 </h2>
+                
+                <div style={{ ...tableContainerStyle }}>
+                    <table style={{ ...tableStyle }}>
+                        <thead>
+                            <tr>
+                                <th style={tableHeaderStyle}>Product Image</th>
+                                <th style={tableHeaderStyle}>Product Name</th>
+                                <th style={tableHeaderStyle}>Trade ID</th>
+                                <th style={tableHeaderStyle}>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {pendingTrades.length > 0 ? pendingTrades.map(trade => (
+                                <tr key={trade.id} style={tableRowStyle}>
+                                    <td>
+                                        <img src={`http://localhost:8080/uploads/${trade.product_image}`} alt={trade.product_name} style={imageStyle} />
+                                    </td>
+                                    <td>{trade.product_name}</td>
+                                    <td>{trade.id}</td>
+                                    <td>
+                                        <button onClick={() => handleTradeRequestAction(trade.id, "accept")}>Accept</button>
+                                        <button onClick={() => handleTradeRequestAction(trade.id, "decline")}>Decline</button>
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr>
+                                    <td colSpan="4">No pending trade requests</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+
 
                 {pendingTrades.length > 0 ? (
                   <div style={tableContainerStyle}>

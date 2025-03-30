@@ -243,6 +243,19 @@ router.put("/update-profile", authenticateToken, async (req, res) => {
     }
 });
 
+router.get("/products", authenticateToken, async (req, res) => {
+    console.log("User ID:", req.user.id);  // Log to see which user is making the request
+    try {
+        const [rows] = await db.promise().query("SELECT * FROM products WHERE owner_id = ?", [req.user.id]);
+        console.log("Products fetched:", rows);  // Log to see what products are fetched
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error("Error fetching products for user:", error);
+        res.status(500).json({ message: "Failed to fetch products." });
+    }
+});
+
+
 //Trading
 //create trade requests (coin based)
 router.post('/trade/request', authenticateToken, (req, res) => {
@@ -296,19 +309,21 @@ router.post('/trade/request', authenticateToken, (req, res) => {
     });
 });
 
-  //fetch all pending trade requests for user
-  router.get('/trade/pending', authenticateToken, (req, res) => {
-    const userId = req.user.id; 
 
-    const query = `
-        SELECT * FROM trades WHERE receiver_id = ? AND status = 'pending'
-    `;
 
-    db.query(query, [userId], (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.status(200).json(results);
+  // Assuming you have 'router' defined as an Express router and 'authenticateToken' as middleware to validate JWTs
+    router.get('/trade/pending', authenticateToken, async (req, res) => {
+        try {
+            // Example logic to fetch pending trades from a database
+            const results = await db.query('SELECT * FROM trades WHERE status = "pending" AND receiver_id = ?', [req.user.id]);
+            res.json(results);
+        } catch (error) {
+            console.error("Error fetching pending trades:", error);
+            res.status(500).json({ message: "Failed to fetch pending trades." });
+        }
     });
-});
+
+
 
   //accept trade
   router.post('/trade/accept/:tradeId', authenticateToken, (req, res) => {
