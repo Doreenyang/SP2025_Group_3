@@ -15,18 +15,34 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
-
 --
--- Table structure for table `products`
---
+-- Table structure for table `trades`
+DROP TABLE IF EXISTS `trades`;
 CREATE TABLE `trades` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sender_id` int(11) NOT NULL,
   `receiver_id` int(11) NOT NULL,
-  ...
-);
+  `offered_item_id` int(11) DEFAULT NULL,
+  `requested_item_id` int(11) NOT NULL,
+  `coins_offered` int(11) DEFAULT 0,
+  `status` enum('pending','accepted','declined') DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `sender_id` (`sender_id`),
+  KEY `receiver_id` (`receiver_id`),
+  KEY `offered_item_id` (`offered_item_id`),
+  KEY `requested_item_id` (`requested_item_id`),
+  CONSTRAINT `trades_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `trades_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `trades_ibfk_3` FOREIGN KEY (`offered_item_id`) REFERENCES `products` (`id`),
+  CONSTRAINT `trades_ibfk_4` FOREIGN KEY (`requested_item_id`) REFERENCES `products` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table `trades`
 INSERT INTO `trades` VALUES
 (1,1,2,NULL,3,50,'pending','2025-02-23 05:07:10');
+
+
 
 DROP TABLE IF EXISTS `products`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
