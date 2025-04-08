@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ PleasePush2 ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: Admin@802301
+          MYSQL_DATABASE: mydatabase
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Build and Run Containers
+      run: docker-compose up -d
+
+    - name: Check Containers are Running
+      run: docker ps
+
+    - name: Clean up
+      run: docker-compose down
