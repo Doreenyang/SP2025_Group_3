@@ -870,9 +870,29 @@ function Profile() {
                         {pendingTrades.map((trade, index) => (
                           <tr key={trade.id || trade._id || index} style={tableRowStyle}>
                             <td style={{ fontWeight: "500" }}>{trade.id || trade._id || "N/A"}</td>
-                            <td>
+                            {/* <td>
                               {trade.requested_item_id || trade.requestedItemId || trade.productName || "Unknown Item"}
-                            </td>
+                            </td> */}
+                            <td>
+  {(() => {
+    const product = products.find(p => p.id === trade.requested_item_id || p.id === trade.requestedItemId);
+    return product?.product_image ? (
+      <img
+        src={`http://localhost:8080/${product.product_image}`}
+        alt={product.product_name}
+        style={{
+          width: "60px",
+          height: "60px",
+          borderRadius: "8px",
+          objectFit: "cover",
+        }}
+      />
+    ) : (
+      "Image not found"
+    );
+  })()}
+</td>
+
                             <td>
                               <span
                                 style={{
