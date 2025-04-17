@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -172,7 +174,7 @@ router.get("/products/:season", authenticateToken, async (req, res) => {
 // Profile Route (protected)
 router.get("/profile", authenticateToken, async (req, res) => {
     try {
-        const [user] = await db.promise().query("SELECT username, created_at FROM users WHERE id = ?", [req.user.id]);
+        const [user] = await db.promise().query("SELECT username FROM users WHERE id = ?", [req.user.id]);
 
         if (user.length === 0) {
             return res.status(404).json({ message: "User not found." });
@@ -312,16 +314,29 @@ router.post('/trade/request', authenticateToken, (req, res) => {
 
 
   // Assuming you have 'router' defined as an Express router and 'authenticateToken' as middleware to validate JWTs
-    router.get('/trade/pending', authenticateToken, async (req, res) => {
+    // router.get('/trades/pending', authenticateToken, async (req, res) => {
+    //     try {
+    //         // Example logic to fetch pending trades from a database
+    //         const results = await db.promise().query('SELECT * FROM trades WHERE status = "pending" AND receiver_id = ?', [req.user.id]);
+    //         res.json(results);
+    //     } catch (error) {
+    //         console.error("Error fetching pending trades:", error);
+    //         res.status(500).json({ message: "Failed to fetch pending trades." });
+    //     }
+    // });
+    router.get('/trades/pending', authenticateToken, async (req, res) => {
         try {
-            // Example logic to fetch pending trades from a database
-            const results = await db.query('SELECT * FROM trades WHERE status = "pending" AND receiver_id = ?', [req.user.id]);
+            const [results] = await db.promise().query(
+                'SELECT * FROM trades WHERE status = "pending" AND receiver_id = ?',
+                [req.user.id]
+            );
             res.json(results);
         } catch (error) {
             console.error("Error fetching pending trades:", error);
             res.status(500).json({ message: "Failed to fetch pending trades." });
         }
     });
+    
 
 
 

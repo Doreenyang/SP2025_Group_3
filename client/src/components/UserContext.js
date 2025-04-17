@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
 
+// Create the context
 export const UserContext = createContext(null);
 
+// Create the provider
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({
     username: "",
@@ -17,5 +19,5 @@ export const UserProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use the user context
+// Create a custom hook to use the context
 export const useUser = () => useContext(UserContext);

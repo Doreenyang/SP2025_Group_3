@@ -59,7 +59,7 @@ function ProductPage() {
   const [coinAmount, setCoinAmount] = useState(0)
   const [activeFilter, setActiveFilter] = useState("all")
   const [searchTerm, setSearchTerm] = useState("")
-  const [sortOption, setSortOption] = useState("default")
+  const [sortOption, setSortOption] = useState("newest")
   const [hoveredProduct, setHoveredProduct] = useState(null)
   const [modalAnimation, setModalAnimation] = useState("")
   const [showMessageModal, setShowMessageModal] = useState(false)
