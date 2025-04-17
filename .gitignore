@@ -10,3 +10,8 @@ client/build/
 # Server-specific
 server/.env
 
+google-cloud-sdk/
+*.tar.gz
+*.zip
+*.bin
+
