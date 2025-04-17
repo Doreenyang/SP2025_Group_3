@@ -834,7 +834,7 @@ const Sidebar = ({ onManageProfileClick }) => {
             setActiveLink("profile")
           }}
         >
-          {/* <svg
+          <svg
             width="1"
             height="18"
             viewBox="0 0 24 24"
@@ -849,7 +849,7 @@ const Sidebar = ({ onManageProfileClick }) => {
           >
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
-          </svg> */}
+          </svg>
           {/* Dynamic Welcome Message */}
           <div>
             <h2>{user.username}</h2>
