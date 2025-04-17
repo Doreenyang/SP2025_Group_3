@@ -6,11 +6,13 @@ import Dashboard from "./components/Dashboard";
 import Profile from "./components/Profile";
 import ProductPage from "./components/ProductPage";
 import { UserProvider } from './components/UserContext'; // Adjust the path as necessary
+import CookieConsent from "./components/CookieConsent";
 
 
 
 function App() {
     return (
+        <>
         <Router>
             <Routes>
                 <Route path="/login" element={<Login />} />
@@ -21,6 +23,8 @@ function App() {
                 <Route path="*" element={<Login />} /> {/* Default to Login */}
             </Routes>
         </Router>
+        <CookieConsent/>
+        </>
     );
 }
 

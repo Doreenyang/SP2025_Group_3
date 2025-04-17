@@ -10,6 +10,7 @@
     "axios": "^1.8.4",
     "cra-template": "1.2.0",
     "emoji-picker-react": "^4.12.2",
+    "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.484.0",
     "react": "^19.0.0",
