@@ -2130,7 +2130,7 @@ function Dashboard() {
         </div>
 
         {/* Quick Navigation */}
-        <div
+        {/* <div
           className="animate-fade-in-up delay-1000"
           style={{
             position: "absolute",
@@ -2142,7 +2142,7 @@ function Dashboard() {
             gap: "15px",
           }}
         >
-          <button
+          {/* <button
             className="hover-scale"
             onClick={() => scrollToSection(seasonsRef)}
             style={{
@@ -2160,8 +2160,8 @@ function Dashboard() {
               boxShadow: activeSection === "seasons" ? "0 0 15px rgba(255, 255, 255, 0.5)" : "none",
               transition: "all 0.3s ease",
             }}
-          >
-            <svg
+          > */}
+            {/* <svg
               width="20"
               height="20"
               viewBox="0 0 24 24"
@@ -2176,7 +2176,7 @@ function Dashboard() {
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
             </svg>
           </button>
-        </div>
+        </div>  */}
 
         {/* Scroll indicator */}
         <div
@@ -2324,7 +2324,7 @@ function Dashboard() {
             padding: "5rem 0",
             backgroundColor: "#f8f9fa",
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1557821552-17105176677c?q=80&w=3732&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+              "url('https://images.unsplash.com/photo-1633432695306-69604c95e2c6?q=80&w=3732&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundAttachment: "fixed",
@@ -2369,7 +2369,7 @@ function Dashboard() {
                     fontWeight: "500",
                   }}
                 >
-                  Product Name
+                  {/* Product Name */}
                 </label>
                 <input
                   type="text"
@@ -2407,7 +2407,7 @@ function Dashboard() {
                     fontWeight: "500",
                   }}
                 >
-                  Suitable Season
+                  {/* Suitable Season */}
                 </label>
                 <select
                   value={suitableSeason}
@@ -2454,7 +2454,7 @@ function Dashboard() {
                     fontWeight: "500",
                   }}
                 >
-                  Description
+                  {/* Description */}
                 </label>
                 <textarea
                   value={productDescription}
@@ -2493,7 +2493,7 @@ function Dashboard() {
                     fontWeight: "500",
                   }}
                 >
-                  Upload Image
+                  {/* Upload Image */}
                 </label>
                 <div
                   style={{
@@ -2556,17 +2556,30 @@ function Dashboard() {
                   type="submit"
                   className="hover-scale"
                   style={{
+                    // padding: "14px 32px",
+                    // backgroundColor: "#4a90e2",
+                    // color: "white",
+                    // border: "none",
+                    // borderRadius: "30px",
+                    // cursor: "pointer",
+                    // fontSize: "1rem",
+                    // fontWeight: "500",
+                    // letterSpacing: "0.5px",
+                    // transition: "all 0.3s ease",
+                    // boxShadow: "0 4px 6px rgba(74, 144, 226, 0.2)",
                     padding: "14px 32px",
-                    backgroundColor: "#4a90e2",
-                    color: "white",
-                    border: "none",
+                    backgroundColor: "transparent",
+                    color: "black",
+                    border: "1px solid white",
                     borderRadius: "30px",
+                    borderBlockColor: "grey",
+                    borderColor: "grey",
                     cursor: "pointer",
-                    fontSize: "1rem",
-                    fontWeight: "500",
-                    letterSpacing: "0.5px",
-                    transition: "all 0.3s ease",
-                    boxShadow: "0 4px 6px rgba(74, 144, 226, 0.2)",
+                    fontSize: "1.1rem",
+                    transition: "all 0.4s ease",
+                    letterSpacing: "1px",
+                    position: "relative",
+                    overflow: "hidden",
                   }}
                 >
                   Submit Product
