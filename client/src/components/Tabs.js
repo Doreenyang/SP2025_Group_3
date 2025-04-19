@@ -89,7 +89,7 @@ function TabsComponent() {
 
   const fetchUserDetails = async (userId, token) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/user/${userId}`, {
+      const response = await axios.get(`http://34.67.85.189:3000/api/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -112,7 +112,7 @@ function TabsComponent() {
     const fetchCoinBalance = async () => {
       try {
         const token = localStorage.getItem("token")
-        const response = await axios.get("http://localhost:8080/api/user/coins", {
+        const response = await axios.get("http://34.67.85.189:3000/api/user/coins", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

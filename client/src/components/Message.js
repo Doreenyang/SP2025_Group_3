@@ -561,7 +561,7 @@ const Messages = ({ userId, onClose }) => {
   const fetchConversations = async () => {
     try {
       const token = localStorage.getItem("token")
-      const response = await axios.get("http://localhost:8080/api/messages/conversations", {
+      const response = await axios.get("http://34.67.85.189:3000/api/messages/conversations", {
         headers: { Authorization: `Bearer ${token}` },
       })
 
@@ -604,8 +604,8 @@ const Messages = ({ userId, onClose }) => {
     try {
       const token = localStorage.getItem("token")
       const url = productId
-        ? `http://localhost:8080/api/messages/conversation/${otherUserId}?productId=${productId}`
-        : `http://localhost:8080/api/messages/conversation/${otherUserId}`
+        ? `http://34.67.85.189:3000/api/messages/conversation/${otherUserId}?productId=${productId}`
+        : `http://34.67.85.189:3000/api/messages/conversation/${otherUserId}`
 
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
@@ -623,7 +623,7 @@ const Messages = ({ userId, onClose }) => {
       })
 
       await axios.put(
-        `http://localhost:8080/api/messages/mark-read`,
+        `http://34.67.85.189:3000/api/messages/mark-read`,
         {
           senderId: otherUserId,
           productId,
@@ -656,7 +656,7 @@ const Messages = ({ userId, onClose }) => {
         formData.append("image", images[0].file)
       }
 
-      await axios.post("http://localhost:8080/api/messages/send", formData, {
+      await axios.post("http://34.67.85.189:3000/api/messages/send", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -692,7 +692,7 @@ const Messages = ({ userId, onClose }) => {
     if (msg.message_type === "image" && msg.image_path) {
       return (
         <img
-          src={`http://localhost:8080/${msg.image_path}`}
+          src={`http://34.67.85.189:3000/${msg.image_path}`}
           alt="Sent content"
           style={{ maxWidth: "100%", maxHeight: "200px", borderRadius: "8px" }}
         />

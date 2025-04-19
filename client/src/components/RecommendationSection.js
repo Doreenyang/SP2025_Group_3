@@ -38,7 +38,7 @@ const seasonStyles = {
                   <img 
                     src={product.fromCookie ? 
                       product.product_image : 
-                      `http://localhost:8080/${product.product_image}`
+                      `http://34.67.85.189:3000/${product.product_image}`
                     }
                     alt={product.product_name}
                     style={styles.image}

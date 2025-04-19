@@ -73,7 +73,7 @@ function Profile() {
       // If we couldn't get the user ID from the token, try the profile API
       if (!currentUserId) {
         try {
-          const profileResponse = await axios.get("http://localhost:8080/api/profile", {
+          const profileResponse = await axios.get("http://34.67.85.189:3000/api/profile", {
             headers: { Authorization: `Bearer ${token}` },
           })
 
@@ -108,7 +108,7 @@ function Profile() {
       // Get all products regardless of whether we have the user ID
       try {
         // Try to get all products
-        const productsResponse = await axios.get("http://localhost:8080/api/products", {
+        const productsResponse = await axios.get("http://34.67.85.189:3000/api/products", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -165,7 +165,7 @@ function Profile() {
 
       // Try to get pending trades
       try {
-        const tradesResponse = await axios.get("http://localhost:8080/api/trade/pending", {
+        const tradesResponse = await axios.get("http://34.67.85.189:3000/api/trade/pending", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -196,7 +196,7 @@ function Profile() {
         console.error("Error fetching pending trades:", tradeError)
         // Try alternative endpoint
         try {
-          const altTradesResponse = await axios.get("http://localhost:8080/api/trades/pending", {
+          const altTradesResponse = await axios.get("http://34.67.85.189:3000/api/trades/pending", {
             headers: { Authorization: `Bearer ${token}` },
           })
 
@@ -271,7 +271,7 @@ function Profile() {
       console.log(`Attempting to ${action} trade with ID: ${tradeId}`)
 
       const response = await axios.post(
-        `http://localhost:8080/api/trade/${action}/${tradeId}`,
+        `http://34.67.85.189:3000/api/trade/${action}/${tradeId}`,
         {},
         {
           headers: {
@@ -297,7 +297,7 @@ function Profile() {
 
       // Refresh the pending trades list
       try {
-        const updatedTradesResponse = await axios.get("http://localhost:8080/api/trade/pending", {
+        const updatedTradesResponse = await axios.get("http://34.67.85.189:3000/api/trade/pending", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -314,7 +314,7 @@ function Profile() {
         console.error("Error refreshing pending trades:", error)
         // Try alternative endpoint
         try {
-          const altTradesResponse = await axios.get("http://localhost:8080/api/trades/pending", {
+          const altTradesResponse = await axios.get("http://34.67.85.189:3000/api/trades/pending", {
             headers: { Authorization: `Bearer ${token}` },
           })
 
@@ -363,7 +363,7 @@ function Profile() {
       }
 
       const response = await axios.put(
-        "http://localhost:8080/api/update-profile",
+        "http://34.67.85.189:3000/api/update-profile",
         {
           username,
           email,
@@ -432,7 +432,7 @@ function Profile() {
       }
 
       const response = await axios.put(
-        "http://localhost:8080/api/update-profile",
+        "http://34.67.85.189:3000/api/update-profile",
         { field, value },
         { headers: { Authorization: `Bearer ${token}` } },
       )
@@ -762,7 +762,7 @@ function Profile() {
                             <td>
                               {product.product_image ? (
                                 <img
-                                  src={`http://localhost:8080/${product.product_image}`}
+                                  src={`http://34.67.85.189:3000/${product.product_image}`}
                                   alt={product.product_name}
                                   style={imageStyle}
                                 />
@@ -905,7 +905,7 @@ function Profile() {
     const product = products.find(p => p.id === trade.requested_item_id || p.id === trade.requestedItemId);
     return product?.product_image ? (
       <img
-        src={`http://localhost:8080/${product.product_image}`}
+        src={`http://34.67.85.189:3000/${product.product_image}`}
         alt={product.product_name}
         style={{
           width: "60px",

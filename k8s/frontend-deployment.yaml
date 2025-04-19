@@ -1,26 +1,3 @@
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: project-frontend
-#   labels:
-#     app: project-frontend
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: project-frontend
-#   template:
-#     metadata:
-#       labels:
-#         app: project-frontend
-#     spec:
-#       containers:
-#         - name: project-frontend
-#           image: project-frontend:release
-#           imagePullPolicy: Never
-#           command: ["npm", "start"]
-#           ports:
-#             - containerPort: 3000  # or whatever port your dev server uses
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,7 +14,7 @@ spec:
     spec:
       containers:
         - name: project-frontend
-          image: gcr.io/aman070902/project-frontend
+          image: gcr.io/aman070902/project-frontend-fixed
           ports:
             - containerPort: 8080
 

@@ -71,7 +71,7 @@ function Login() {
     setError("")
 
     try {
-      const response = await axios.post("http://localhost:8080/api/login", form)
+      const response = await axios.post("http://34.67.85.189:3000/api/login", form)
 
       if (response.data && response.data.token) {
         // Save token to localStorage

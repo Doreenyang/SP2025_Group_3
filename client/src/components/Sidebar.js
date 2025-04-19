@@ -437,7 +437,7 @@ const Sidebar = ({ onManageProfileClick }) => {
           return
         }
 
-        const response = await axios.get("http://localhost:8080/api/profile", {
+        const response = await axios.get("http://34.67.85.189:3000/api/profile", {
           headers: { Authorization: `Bearer ${token}` },
         })
 

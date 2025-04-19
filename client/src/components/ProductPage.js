@@ -104,7 +104,7 @@ function ProductPage() {
 
     try {
       const token = localStorage.getItem("token")
-      const response = await axios.post("http://localhost:8080/api/submit-product", formData, {
+      const response = await axios.post("http://34.67.85.189:3000/api/submit-product", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -137,7 +137,7 @@ function ProductPage() {
   const fetchUserById = async (userId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:8080/api/users/${userId}`, {
+      const response = await axios.get(`http://34.67.85.189:3000/api/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -159,7 +159,7 @@ function ProductPage() {
         return
       }
 
-      const response = await axios.get(`http://localhost:8080/api/products/${season}`, {
+      const response = await axios.get(`http://34.67.85.189:3000/api/products/${season}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 
@@ -196,7 +196,7 @@ function ProductPage() {
     setShowModal(true)
 
     try {
-      const response = await axios.get("http://localhost:8080/api/ebay", {
+      const response = await axios.get("http://34.67.85.189:3000/api/ebay", {
         params: {
           keywords: product.product_name,
         },
@@ -227,7 +227,7 @@ function ProductPage() {
     try {
       const token = localStorage.getItem("token")
       const response = await axios.post(
-        "http://localhost:8080/api/messages/send",
+        "http://34.67.85.189:3000/api/messages/send",
         {
           receiverId: selectedProduct.owner_id,
           productId: selectedProduct.id,
@@ -296,7 +296,7 @@ function ProductPage() {
       })
 
       const response = await axios.post(
-        "http://localhost:8080/api/trade/request",
+        "http://34.67.85.189:3000/api/trade/request",
         {
           receiverId,
           requestedItemId,
@@ -332,7 +332,7 @@ function ProductPage() {
           return
         }
 
-        const response = await axios.get(`http://localhost:8080/api/products/${season}`, {
+        const response = await axios.get(`http://34.67.85.189:3000/api/products/${season}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -941,7 +941,7 @@ function ProductPage() {
                 >
                   {product.product_image ? (
                     <img
-                      src={`http://localhost:8080/${product.product_image}`}
+                      src={`http://34.67.85.189:3000/${product.product_image}`}
                       alt={product.product_name}
                       style={{
                         width: "100%",
