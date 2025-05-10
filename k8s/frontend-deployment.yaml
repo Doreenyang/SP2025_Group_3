@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-frontend
+  template:
+    metadata:
+      labels:
+        app: project-frontend
+    spec:
+      containers:
+        - name: project-frontend
+          image: gcr.io/aman070902/project-frontend-fixed
+          ports:
+            - containerPort: 8080
+

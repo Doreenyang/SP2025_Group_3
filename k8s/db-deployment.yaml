@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: project-draft-db
+spec:
+  serviceName: "project-draft-db"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-draft-db
+  template:
+    metadata:
+      labels:
+        app: project-draft-db
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:5.7
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: Admin@802301
+            - name: MYSQL_DATABASE
+              value: mydatabase
+          volumeMounts:
+            - name: initdb
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: initdb
+          configMap:
+            name: db-init-sql

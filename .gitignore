@@ -10,3 +10,9 @@ client/build/
 # Server-specific
 server/.env
 
+google-cloud-sdk/
+*.tar.gz
+*.zip
+*.bin
+google-cloud-sdk/.install/.backup/bin/anthoscli
+google-cloud-sdk-455.0.0-darwin-arm.tar.gz

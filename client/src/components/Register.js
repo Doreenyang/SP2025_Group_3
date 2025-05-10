@@ -172,7 +172,7 @@ function Register() {
     setSuccess("")
 
     try {
-      const response = await axios.post("http://localhost:8080/api/register", form)
+      const response = await axios.post("http://34.67.85.189:3000/api/register", form)
       setSuccess(response.data.message || "Registration successful! You can now log in.")
 
       // Reset form

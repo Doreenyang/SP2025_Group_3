@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-backend
+  template:
+    metadata:
+      labels:
+        app: project-backend
+    spec:
+      containers:
+        - name: project-backend
+          image: gcr.io/aman070902/project-backend-fixed
+          ports:
+            - containerPort: 3000 # or whatever your backend listens on
+          env:
+            - name: NODE_ENV
+              value: "production"
+            # add other env vars here if needed

@@ -8,6 +8,8 @@ import Message from "./Message"
 import Footer from "./Footer"
 import { MessageCircle, Coins, ArrowRight, X } from "lucide-react"
 import { jwtDecode } from "jwt-decode"
+import { trackUserInteraction } from "./utils/tracking"
+import { Plus } from "lucide-react"
 
 // Season-specific styling
 const seasonStyles = {
@@ -59,13 +61,17 @@ function ProductPage() {
   const [coinAmount, setCoinAmount] = useState(0)
   const [activeFilter, setActiveFilter] = useState("all")
   const [searchTerm, setSearchTerm] = useState("")
-  const [sortOption, setSortOption] = useState("default")
+  const [sortOption, setSortOption] = useState("newest")
   const [hoveredProduct, setHoveredProduct] = useState(null)
   const [modalAnimation, setModalAnimation] = useState("")
   const [showMessageModal, setShowMessageModal] = useState(false)
   const [messageContent, setMessageContent] = useState("")
   const [userId, setUserId] = useState(null)
   const [showMessages, setShowMessages] = useState(false)
+  const [showForm, setShowForm] = useState(false)
+  const [productName, setProductName] = useState("")
+  const [productDescription, setProductDescription] = useState("")
+  const [productImage, setProductImage] = useState(null)
 
   // Get user ID from token
   useEffect(() => {
@@ -85,13 +91,112 @@ function ProductPage() {
   // Get season-specific styling
   const currentSeasonStyle = seasonStyles[season] || seasonStyles.spring
 
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    const formData = new FormData()
+    formData.append("productName", productName)
+    formData.append("suitableSeason", season) // Automatically set to current season
+    formData.append("productDescription", productDescription)
+    if (productImage) {
+      formData.append("productImage", productImage)
+    }
+
+    try {
+      const token = localStorage.getItem("token")
+      const response = await axios.post("http://34.67.85.189:3000/api/submit-product", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      alert(response.data.message)
+
+      // Reset form and refresh products
+      setProductName("")
+      setProductDescription("")
+      setProductImage(null)
+      setShowForm(false)
+      fetchProducts()
+    } catch (error) {
+      console.error("Error submitting product:", error)
+      alert("There was an error submitting your product.")
+    }
+  }
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0]
+    setProductImage(file)
+  }
+
+  const toggleForm = () => {
+    setShowForm(!showForm)
+  }
+
+  const fetchUserById = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`http://34.67.85.189:3000/api/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      return null;
+    }
+  };
+
+  // Fetch products for the current season
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem("token")
+
+      if (!token) {
+        alert("Unauthorized! Redirecting to login.")
+        navigate("/login")
+        return
+      }
+
+      const response = await axios.get(`http://34.67.85.189:3000/api/products/${season}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      const productsWithOwners = await Promise.all(
+        response.data.map(async (product) => {
+          const owner = await fetchUserById(product.owner_id);
+          return {
+            ...product,
+            ownerUsername: owner ? owner.username : "Unknown",
+          };
+        })
+      );
+
+      setProducts(productsWithOwners)
+    } catch (error) {
+      console.error("Error fetching products:", error)
+      alert("Failed to fetch products. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts()
+  }, [season, navigate])
+
+  
+
+
+
   const handleTradeClick = async (product) => {
     setSelectedProduct(product)
     setModalAnimation("scale-in")
     setShowModal(true)
 
     try {
-      const response = await axios.get("http://localhost:8080/api/ebay", {
+      const response = await axios.get("http://34.67.85.189:3000/api/ebay", {
         params: {
           keywords: product.product_name,
         },
@@ -122,7 +227,7 @@ function ProductPage() {
     try {
       const token = localStorage.getItem("token")
       const response = await axios.post(
-        "http://localhost:8080/api/messages/send",
+        "http://34.67.85.189:3000/api/messages/send",
         {
           receiverId: selectedProduct.owner_id,
           productId: selectedProduct.id,
@@ -159,8 +264,26 @@ function ProductPage() {
     setMessageContent("")
   }
 
+  const trackProductInteraction = (product, interactionType) => {
+    trackUserInteraction(interactionType, {
+      productId: product.id,
+      name: product.product_name,
+      image: product.product_image,
+      season: season // current season from URL params
+    });
+  };
+
+  // Track product views when component mounts
+  
+  useEffect(() => {
+    products.forEach(product => {
+      trackProductInteraction(product, 'PRODUCT_VIEW');
+    });
+  }, [products]);
+
   const handleTradeSubmit = async () => {
     try {
+      trackUserInteraction(selectedProduct, 'TRADE_ATTEMPT');
       const token = localStorage.getItem("token")
       const receiverId = selectedProduct.owner_id
       const requestedItemId = selectedProduct.id
@@ -173,7 +296,7 @@ function ProductPage() {
       })
 
       const response = await axios.post(
-        "http://localhost:8080/api/trade/request",
+        "http://34.67.85.189:3000/api/trade/request",
         {
           receiverId,
           requestedItemId,
@@ -209,7 +332,7 @@ function ProductPage() {
           return
         }
 
-        const response = await axios.get(`http://localhost:8080/api/products/${season}`, {
+        const response = await axios.get(`http://34.67.85.189:3000/api/products/${season}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -281,6 +404,8 @@ function ProductPage() {
       100% { transform: translateY(0px); }
     }
   `
+
+
 
   if (loading) {
     return (
@@ -389,6 +514,7 @@ function ProductPage() {
             zIndex: 2,
             maxWidth: "800px",
             padding: "0 2rem",
+            marginTop: "-2rem"
           }}
         >
           <div
@@ -424,8 +550,248 @@ function ProductPage() {
           >
             {currentSeasonStyle.description}
           </p>
+              
+            {/* Add Product Button */}
+          <button
+            onClick={toggleForm}
+            style={{
+              marginTop: "2rem",
+              padding: "12px 24px",
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              color: "white",
+              border: "1px solid white",
+              borderRadius: "30px",
+              cursor: "pointer",
+              fontSize: "1rem",
+              fontWeight: "500",
+              transition: "all 0.3s ease",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.3)"
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)"
+            }}
+          >
+            <Plus size={18} />
+            {showForm ? "Close Form" : "Add Product"}
+          </button>
         </div>
       </div>
+
+      {/* Product Submission Form */}
+      {showForm && (
+        <div
+          style={{
+            padding: "3rem 2rem",
+            maxWidth: "800px",
+            margin: "0 auto",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+              padding: "2rem",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "1.8rem",
+                fontWeight: "400",
+                marginBottom: "1.5rem",
+                color: currentSeasonStyle.primary,
+              }}
+            >
+              Add New {season.charAt(0).toUpperCase() + season.slice(1)} Product
+            </h2>
+
+            <form onSubmit={handleSubmit}>
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "0.5rem",
+                    fontSize: "0.9rem",
+                    fontWeight: "500",
+                    color: "#555",
+                  }}
+                >
+                  {/* Product Name */}
+                </label>
+                <input
+                  type="text"
+                  value={productName}
+                  onChange={(e) => setProductName(e.target.value)}
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "0.9rem 1rem",
+                    borderRadius: "8px",
+                    border: "1px solid #ddd",
+                    fontSize: "1rem",
+                    transition: "all 0.3s ease",
+                  }}
+                  placeholder="Enter product name"
+                />
+              </div>
+
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "0.5rem",
+                    fontSize: "0.9rem",
+                    fontWeight: "500",
+                    color: "#555",
+                  }}
+                >
+                  {/* Description */}
+                </label>
+                <textarea
+                  value={productDescription}
+                  onChange={(e) => setProductDescription(e.target.value)}
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "0.9rem 1rem",
+                    borderRadius: "8px",
+                    border: "1px solid #ddd",
+                    fontSize: "1rem",
+                    minHeight: "120px",
+                    resize: "vertical",
+                    transition: "all 0.3s ease",
+                  }}
+                  placeholder="Describe your product"
+                />
+              </div>
+
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "0.5rem",
+                    fontSize: "0.9rem",
+                    fontWeight: "500",
+                    color: "#555",
+                  }}
+                >
+                  {/* Product Image */}
+                </label>
+                <div
+                  style={{
+                    border: "2px dashed #ddd",
+                    borderRadius: "8px",
+                    padding: "1.5rem",
+                    textAlign: "center",
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  <input
+                    type="file"
+                    onChange={handleImageUpload}
+                    required
+                    style={{ display: "none" }}
+                    id="product-image"
+                  />
+                  <label
+                    htmlFor="product-image"
+                    style={{
+                      cursor: "pointer",
+                      display: "block",
+                    }}
+                  >
+                    {productImage ? (
+                      <div
+                        style={{
+                          marginBottom: "1rem",
+                          color: currentSeasonStyle.primary,
+                          fontWeight: "500",
+                        }}
+                      >
+                        {productImage.name}
+                      </div>
+                    ) : (
+                      <>
+                        <svg
+                          width="40"
+                          height="40"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#888"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          style={{ margin: "0 auto 1rem" }}
+                        >
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="17 8 12 3 7 8"></polyline>
+                          <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p style={{ margin: 0, color: "#666" }}>Click to upload product image</p>
+                      </>
+                    )}
+                  </label>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem"}}>
+                <button
+                  type="button"
+                  onClick={toggleForm}
+                  style={{
+                    padding: "0.9rem 1.5rem",
+                    backgroundColor: "#f1f1f1",
+                    color: "#666",
+                    margin:"0 auto 2rem",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontSize: "1rem",
+                    fontWeight: "500",
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    // padding: "0.9rem 1.5rem",
+                    padding: "0.9rem 1.5rem",
+                    backgroundColor: "#9fe2bf",
+                    color: "#666",
+                    margin:"0 auto 2rem",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontSize: "1rem",
+                    fontWeight: "500",
+                    transition: "all 0.3s ease",
+                    // height: "30px",
+                    // backgroundColor: currentSeasonStyle.primary,
+                    // color: "white",
+                    // border: "none",
+                    // borderRadius: "8px",
+                    // cursor: "pointer",
+                    // fontSize: "1rem",
+                    // fontWeight: "500",
+                    // transition: "all 0.3s ease",
+                  }}
+                >
+                  Submit Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      
 
       {/* Products Section */}
       <div
@@ -575,7 +941,7 @@ function ProductPage() {
                 >
                   {product.product_image ? (
                     <img
-                      src={`http://localhost:8080/${product.product_image}`}
+                      src={`http://34.67.85.189:3000/${product.product_image}`}
                       alt={product.product_name}
                       style={{
                         width: "100%",
@@ -640,6 +1006,10 @@ function ProductPage() {
                   >
                     {product.product_name}
                   </h3>
+                  <p style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
+    {/* Posted by: {product.ownerUsername} */}
+  </p>
+  <br/>
 
                   <p
                     style={{
@@ -870,7 +1240,11 @@ function ProductPage() {
                     }}
                   >
                     {selectedProduct?.product_name}
+                
                   </h3>
+                  <p style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
+                  {/* Posted by: {selectedProduct?.ownerUsername} */}
+                </p>
                   <p
                     style={{
                       margin: "0",
@@ -883,6 +1257,7 @@ function ProductPage() {
                     }}
                   >
                     {selectedProduct?.product_description}
+                    
                   </p>
                 </div>
               </div>
@@ -1162,6 +1537,9 @@ function ProductPage() {
                   >
                     {selectedProduct?.product_name}
                   </h3>
+                  <p style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
+    {/* Posted by: {selectedProduct?.ownerUsername} */}
+  </p>
                   <p
                     style={{
                       margin: "0",
@@ -1276,65 +1654,12 @@ function ProductPage() {
         </div>
       )}
 
-      {/* Floating Message Button */}
-      <button
-        onClick={() => setShowMessages(true)}
-        style={{
-          position: "fixed",
-          bottom: "20px",
-          right: "20px",
-          backgroundColor: "#2196F3",
-          color: "white",
-          border: "none",
-          borderRadius: "50%",
-          width: "60px",
-          height: "60px",
-          fontSize: "24px",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
-          zIndex: 100,
-        }}
-      >
-        <MessageCircle size={24} />
-      </button>
-
-      {/* Messages Modal */}
-      {showMessages && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0,0,0,0.8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              width: "80%",
-              height: "80%",
-              borderRadius: "10px",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            <Message userId={userId} onClose={() => setShowMessages(false)} />
-          </div>
-        </div>
-      )}
-
       <Footer />
     </div>
   )
 }
 
 export default ProductPage
+
+
 
